@@ -33,14 +33,13 @@
         .jp-pop-card:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px #1A1A1A; }
         .jp-pop-btn { background: white; border: 3px solid #1A1A1A; box-shadow: 4px 4px 0px #1A1A1A; }
         
-        /* 滾輪核心樣式：確保 snapping 在雙欄位都能運作 */
-        .wheel-container { height: 150px; overflow-y: scroll; scroll-snap-type: y mandatory; -ms-overflow-style: none; scrollbar-width: none; }
+        /* 滾輪核心樣式 */
+        .wheel-outer { position: relative; height: 150px; overflow: hidden; background: #f9f9f9; border-radius: 1rem; border: 2px solid #eee; }
+        .wheel-container { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; -ms-overflow-style: none; scrollbar-width: none; }
         .wheel-container::-webkit-scrollbar { display: none; }
         .wheel-item { height: 50px; line-height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; opacity: 0.2; scroll-snap-align: center; }
         .wheel-item.active { opacity: 1; font-weight: 900; color: #3399FF; font-size: 2.2rem; }
-        
-        /* 選取框遮罩 */
-        .wheel-mask { position: absolute; height: 50px; width: 100%; border-top: 3px solid #1A1A1A; border-bottom: 3px solid #1A1A1A; pointer-events: none; top: 50px; z-index: 5; }
+        .wheel-mask { position: absolute; height: 50px; width: 100%; border-top: 3px solid #1A1A1A; border-bottom: 3px solid #1A1A1A; pointer-events: none; top: 50px; z-index: 5; background: rgba(51, 153, 255, 0.05); }
 
         .jp-label { position: absolute; top: -12px; left: 15px; background: #1A1A1A; color: white; padding: 2px 10px; font-size: 10px; font-weight: 900; border-radius: 4px; z-index: 10; }
         .app-icon { width: 42px; height: 42px; object-fit: contain; }
@@ -76,7 +75,7 @@
             </div>
         </div>
 
-        <!-- 系統假單區間 -->
+        <!-- 假單區間 -->
         <section class="jp-pop-card bg-jp-yellow rounded-[2.5rem] p-7 border-4 border-slate-900 shadow-[10px_10px_0px_#1A1A1A] space-y-6">
             <div class="flex justify-between items-center text-left">
                 <div class="flex flex-col">
@@ -100,10 +99,10 @@
             </div>
         </section>
 
-        <!-- 打卡簽退建議 -->
+        <!-- 簽退建議 -->
         <section class="jp-pop-card bg-jp-blue rounded-[2.5rem] p-8 text-center border-4 border-slate-900 shadow-[12px_12px_0px_#1A1A1A]">
             <p class="text-[11px] font-black text-white/90 uppercase tracking-[0.4em] mb-3">最速打卡可能時間</p>
-            <p id="actualCheckOut" class="text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)]">16:30</p>
+            <p id="actualCheckOut" class="text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)] leading-none">16:30</p>
             <div class="mt-6 inline-flex items-center gap-2 bg-jp-yellow text-slate-900 px-6 py-2 rounded-full text-xs font-black border-2 border-slate-900 shadow-[3px_3px_0px_#1A1A1A]">
                 <i class="fa-solid fa-circle-check"></i> 以後、簽退OK！
             </div>
@@ -114,36 +113,39 @@
         </footer>
     </main>
 
-    <!-- 選擇彈窗 -->
+    <!-- 彈窗內容 -->
     <div id="pickerModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-md items-end sm:items-center justify-center p-6">
-        <div class="bg-white dark:bg-slate-900 w-full sm:max-w-sm rounded-[3rem] p-8 border-4 border-slate-800 shadow-[15px_15px_0px_#1A1A1A]">
+        <div class="bg-white dark:bg-slate-900 w-full sm:max-w-sm rounded-[3rem] p-8 border-4 border-slate-800 shadow-[15px_15px_0px_#1A1A1A] overflow-hidden">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="font-black text-slate-800 dark:text-white tracking-widest text-lg">時間設定</h3>
                 <div class="flex bg-slate-100 dark:bg-slate-800 rounded-full p-1 border-2 border-slate-800">
                     <button onclick="toggleMode('key')" id="btnKey" class="px-6 py-2 rounded-full text-xs font-black bg-jp-blue text-white transition-all shadow-[2px_2px_0px_#1A1A1A]">輸入</button>
-                    <button onclick="toggleMode('wheel')" id="btnWheel" class="px-6 py-2 rounded-full text-xs font-black text-slate-400">滾輪</button>
+                    <button onclick="toggleMode('wheel')" id="btnWheel" class="px-6 py-2 rounded-full text-xs font-black text-slate-400 transition-all">滾輪</button>
                 </div>
             </div>
 
             <!-- 輸入模式 -->
-            <div id="modeKey" class="flex flex-col items-center py-10">
+            <div id="modeKey" class="flex flex-col items-center py-6">
                 <input type="tel" id="manualValue" maxlength="4" placeholder="0830"
                     class="w-full text-center text-7xl font-black bg-transparent border-b-8 border-jp-blue outline-none pb-2 text-slate-800 dark:text-white placeholder:opacity-20">
-                <p class="mt-8 text-[12px] font-black text-slate-400 uppercase tracking-widest italic">Input 4 numbers (ex. 1630)</p>
+                <p class="mt-8 text-[12px] font-black text-slate-400 uppercase tracking-widest">請輸入 4 位數 (自動跳轉)</p>
             </div>
 
-            <!-- 滾輪模式 (修正分秒皆可動) -->
-            <div id="modeWheel" class="hidden justify-center items-center gap-6 h-[150px] relative overflow-hidden">
-                <div class="wheel-mask"></div>
-                <!-- 小時滾輪 -->
-                <div class="wheel-container w-24 text-center" id="wheelH"></div>
-                <div class="text-4xl font-black text-slate-800 dark:text-white z-10">:</div>
-                <!-- 分鐘滾輪 -->
-                <div class="wheel-container w-24 text-center" id="wheelM"></div>
+            <!-- 滾輪模式 (分時獨立) -->
+            <div id="modeWheel" class="hidden flex justify-center items-center gap-4 py-4">
+                <div class="wheel-outer w-24">
+                    <div class="wheel-mask"></div>
+                    <div class="wheel-container" id="wheelH"></div>
+                </div>
+                <div class="text-4xl font-black text-slate-800 dark:text-white">:</div>
+                <div class="wheel-outer w-24">
+                    <div class="wheel-mask"></div>
+                    <div class="wheel-container" id="wheelM"></div>
+                </div>
             </div>
 
-            <div class="flex gap-4 mt-10">
-                <button id="cancelBtn" class="flex-1 py-5 text-slate-500 font-black border-2 border-slate-200 rounded-2xl hover:bg-slate-50">取消</button>
+            <div class="flex gap-4 mt-8">
+                <button id="cancelBtn" class="flex-1 py-5 text-slate-500 font-black border-2 border-slate-200 rounded-2xl hover:bg-slate-50 transition-colors">取消</button>
                 <button id="confirmBtn" class="flex-1 py-5 bg-jp-red text-white rounded-2xl font-black border-2 border-slate-800 shadow-[5px_5px_0px_#1A1A1A] active:translate-y-1 transition-all text-xl">確定</button>
             </div>
         </div>
@@ -153,29 +155,31 @@
         let state = { target: 'start', start: {h: 8, m: 30}, leave: {h: 16, m: 0} };
         let currentMode = 'key';
 
-        // 初始化滾輪列表與獨立監聽
         function createWheels() {
             const hWheel = document.getElementById('wheelH');
             const mWheel = document.getElementById('wheelM');
             
-            // 產生內容
-            const genItems = (count) => {
-                let html = '<div style="height: 50px;"></div>'; // Top padding
-                for(let i=0; i<count; i++) html += `<div class="wheel-item" data-val="${i}">${i.toString().padStart(2,'0')}</div>`;
-                html += '<div style="height: 50px;"></div>'; // Bottom padding
-                return html;
+            const generateItems = (count, container) => {
+                container.innerHTML = '<div style="height: 50px;"></div>'; // Spacer
+                for(let i=0; i<count; i++) {
+                    const item = document.createElement('div');
+                    item.className = 'wheel-item';
+                    item.dataset.val = i;
+                    item.textContent = i.toString().padStart(2, '0');
+                    container.appendChild(item);
+                }
+                container.innerHTML += '<div style="height: 50px;"></div>'; // Spacer
             };
 
-            hWheel.innerHTML = genItems(24);
-            mWheel.innerHTML = genItems(60);
-            
-            // 綁定滾動監聽
+            generateItems(24, hWheel);
+            generateItems(60, mWheel);
+
             [hWheel, mWheel].forEach(w => {
                 w.addEventListener('scroll', () => {
-                    const center = w.scrollTop + 75; // 容器高度的一半
-                    const items = w.querySelectorAll('.wheel-item');
-                    items.forEach(item => {
-                        const dist = Math.abs((item.offsetTop + 25) - center);
+                    const center = w.scrollTop + 75; 
+                    w.querySelectorAll('.wheel-item').forEach(item => {
+                        const itemCenter = item.offsetTop + 25;
+                        const dist = Math.abs(itemCenter - center);
                         item.classList.toggle('active', dist < 25);
                     });
                 });
@@ -191,7 +195,6 @@
             const h = state[target].h;
             const m = state[target].m;
             
-            // 定位雙滾輪到正確位置
             setTimeout(() => {
                 document.getElementById('wheelH').scrollTop = h * 50;
                 document.getElementById('wheelM').scrollTop = m * 50;
@@ -199,9 +202,8 @@
             }, 100);
         }
 
-        // 輸入滿四位自動執行
         document.getElementById('manualValue').addEventListener('input', function() {
-            if (this.value.length >= 4) {
+            if (this.value.length === 4) {
                 setTimeout(confirmPicker, 300);
             }
         });
@@ -215,10 +217,11 @@
             if(mode === 'key') {
                 btnKey.className = "px-6 py-2 rounded-full text-xs font-black bg-jp-blue text-white shadow-[2px_2px_0px_#1A1A1A]";
                 btnWheel.className = "px-6 py-2 rounded-full text-xs font-black text-slate-400";
-                setTimeout(() => document.getElementById('manualValue').focus(), 50);
+                setTimeout(() => document.getElementById('manualValue').focus(), 100);
             } else {
                 btnWheel.className = "px-6 py-2 rounded-full text-xs font-black bg-jp-blue text-white shadow-[2px_2px_0px_#1A1A1A]";
                 btnKey.className = "px-6 py-2 rounded-full text-xs font-black text-slate-400";
+                document.getElementById('manualValue').blur();
             }
         }
 
