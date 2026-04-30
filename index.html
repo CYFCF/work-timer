@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>差假工時計算器</title>
+    <title>24H 差假計算器</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -17,162 +17,120 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;700&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; -webkit-font-smoothing: antialiased; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        input[type="time"] { appearance: none; -webkit-appearance: none; }
+        /* 隱藏部分瀏覽器可能出現的上下箭頭，保持介面極簡 */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300">
+<body class="bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300">
 
-    <!-- Header -->
-    <nav class="max-w-xl mx-auto pt-8 px-6 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div class="bg-brand-light p-2 rounded-lg shadow-lg shadow-indigo-500/30">
-                <i class="fa-solid fa-business-time text-white text-xl"></i>
-            </div>
-            <h1 class="text-xl font-bold tracking-tight">差假計算 <span class="text-brand-light">v4.0</span></h1>
-        </div>
-        <button id="themeToggle" class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center transition-all active:scale-95">
-            <i class="fa-solid fa-moon dark:hidden text-slate-600"></i>
-            <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+    <nav class="max-w-md mx-auto pt-8 px-6 flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-tight flex items-center gap-2">
+            <span class="w-2 h-6 bg-brand-light rounded-full"></span>
+            24H 差假計算
+        </h1>
+        <button id="themeToggle" class="text-slate-400 hover:text-brand-light transition-colors">
+            <i class="fa-solid fa-circle-half-stroke text-xl"></i>
         </button>
     </nav>
 
-    <main class="max-w-xl mx-auto p-6 space-y-6">
+    <main class="max-w-md mx-auto p-6 space-y-6">
         
-        <!-- Step 1: 簽到設定 -->
+        <!-- 簽到卡片 -->
         <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-            <div class="flex justify-between items-center mb-6">
-                <span class="text-sm font-bold text-slate-400 uppercase tracking-widest">Step 1. 每日簽到</span>
-                <span id="earlyBird" class="hidden text-[10px] bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 px-2 py-0.5 rounded-full font-bold">08:00 防呆生效</span>
+            <div class="flex justify-between items-center mb-4">
+                <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">01. 實際簽到時間</label>
+                <div id="earlyBird" class="hidden text-[10px] text-amber-500 font-bold border border-amber-500/30 px-2 py-0.5 rounded">以 08:00 計</div>
             </div>
-            
-            <div class="space-y-4">
-                <div class="relative">
-                    <input type="time" id="startTime" value="08:30" 
-                        class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-light rounded-2xl p-4 text-4xl mono font-bold outline-none transition-all">
-                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none">24H</span>
-                </div>
-                <div class="flex items-center justify-between px-2">
-                    <p class="text-sm text-slate-500">正常應簽退時間：</p>
-                    <p id="standardOff" class="text-xl mono font-bold text-slate-700 dark:text-slate-300">17:30</p>
-                </div>
+            <input type="time" id="startTime" value="08:30" step="60"
+                class="w-full bg-transparent text-5xl mono font-bold outline-none border-b-2 border-slate-100 dark:border-slate-800 focus:border-brand-light pb-2 transition-all">
+            <div class="mt-4 flex justify-between text-sm">
+                <span class="text-slate-400">應簽退基準 (不請假)</span>
+                <span id="standardOff" class="mono font-bold text-slate-600 dark:text-slate-400">17:30</span>
             </div>
         </section>
 
-        <!-- Step 2: 提早離開需求 -->
+        <!-- 離開卡片 -->
         <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-            <span class="text-sm font-bold text-slate-400 uppercase tracking-widest block mb-6">Step 2. 提早離開模擬</span>
+            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-4">02. 預計離開時間</label>
+            <input type="time" id="leaveTime" value="16:00" step="60"
+                class="w-full bg-transparent text-5xl mono font-bold outline-none border-b-2 border-slate-100 dark:border-slate-800 focus:border-brand-light pb-2 transition-all">
             
-            <div class="space-y-6">
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-500 ml-1">預計實際離開公司時間 (24H)</label>
-                    <input type="time" id="leaveTime" value="16:00"
-                        class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-light rounded-2xl p-4 text-3xl mono font-bold outline-none transition-all">
+            <div class="mt-8 space-y-4">
+                <!-- 假單結果 -->
+                <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">系統假單建議區間</p>
+                        <p class="text-lg mono font-bold">
+                            <span id="sysStart">16:00</span> - <span id="sysEnd">17:30</span>
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">總時數</p>
+                        <p id="leaveHours" class="text-lg mono font-bold text-indigo-500">1.5</p>
+                    </div>
                 </div>
 
-                <!-- 結果區塊 -->
-                <div class="grid grid-cols-1 gap-4">
-                    <!-- 系統假單建議 -->
-                    <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl p-5 border border-indigo-100 dark:border-indigo-800">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-indigo-600 dark:text-indigo-400 font-bold text-sm">系統假單填寫 (30m 單位)</h3>
-                            <span id="leaveHours" class="bg-indigo-600 text-white text-xs px-2 py-0.5 rounded font-mono">1.5 hr</span>
-                        </div>
-                        <div class="flex items-center justify-between text-2xl mono font-bold tracking-tighter">
-                            <span id="sysStart">16:00</span>
-                            <i class="fa-solid fa-arrow-right text-indigo-300 text-sm"></i>
-                            <span id="sysEnd">17:30</span>
-                        </div>
-                    </div>
-
-                    <!-- 實際簽退要求 -->
-                    <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-5 border border-emerald-100 dark:border-emerald-800">
-                        <h3 class="text-emerald-600 dark:text-emerald-400 font-bold text-sm mb-4">今日實際簽退建議時間</h3>
-                        <div class="flex items-baseline gap-2">
-                            <span id="actualCheckOut" class="text-4xl mono font-bold text-emerald-600 tracking-tighter">16:00</span>
-                            <span class="text-xs text-emerald-500 font-bold">以後</span>
-                        </div>
-                        <p class="text-[10px] text-emerald-400 mt-2">※ 此時間簽退可確保 工時 + 假單 ≥ 8.0 小時</p>
+                <!-- 簽退要求 -->
+                <div class="p-4 bg-brand-light rounded-2xl text-white shadow-lg shadow-indigo-500/20">
+                    <p class="text-[10px] font-bold uppercase opacity-80">實際簽退要求時間</p>
+                    <div class="flex items-baseline gap-2">
+                        <span id="actualCheckOut" class="text-4xl mono font-bold tracking-tighter">16:00</span>
+                        <span class="text-xs font-bold">以後</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Rules -->
-        <footer class="px-6 space-y-2">
-            <div class="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-                <i class="fa-solid fa-circle-info"></i>
-                <span>計算規則</span>
-            </div>
-            <ul class="text-[11px] text-slate-400 space-y-1 ml-5 list-disc">
-                <li>08:00 前簽到以 08:00 起算，最晚簽退 18:00。</li>
-                <li>系統假單僅限 08:30 - 17:30 區間。</li>
-                <li>午休 12:30 - 13:30 不計工時。</li>
-            </ul>
-        </footer>
+        <p class="text-center text-[10px] text-slate-400 uppercase tracking-[0.2em] font-medium">
+            Strict 24H Logic • 30M Step
+        </p>
     </main>
 
     <script>
-        const startTimeInput = document.getElementById('startTime');
-        const leaveTimeInput = document.getElementById('leaveTime');
-        const earlyBird = document.getElementById('earlyBird');
+        const startEl = document.getElementById('startTime');
+        const leaveEl = document.getElementById('leaveTime');
+        const birdEl = document.getElementById('earlyBird');
 
-        function toMin(str) {
-            const [h, m] = str.split(':').map(Number);
-            return h * 60 + m;
+        function toM(s) { const [h, m] = s.split(':').map(Number); return h * 60 + m; }
+        function toS(m) { 
+            const hh = Math.floor(Math.max(0, m) / 60).toString().padStart(2, '0');
+            const mm = (Math.max(0, m) % 60).toString().padStart(2, '0');
+            return `${hh}:${mm}`;
         }
 
-        function toStr(min) {
-            const m = Math.max(0, min);
-            return `${Math.floor(m / 60).toString().padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`;
-        }
+        function run() {
+            let s = toM(startEl.value);
+            const minS = 480; // 08:00
+            const maxE = 1080; // 18:00
+            const sysE = 1050; // 17:30
 
-        function update() {
-            let start = toMin(startTimeInput.value);
-            const limitStart = toMin("08:00");
-            const limitEnd = toMin("18:00");
-            const sysLimitEnd = toMin("17:30");
+            // 08:00 防呆
+            if (s < minS) { s = minS; birdEl.classList.remove('hidden'); } 
+            else { birdEl.classList.add('hidden'); }
 
-            // 防呆：08:00 限制
-            if (start < limitStart) {
-                start = limitStart;
-                earlyBird.classList.remove('hidden');
-            } else {
-                earlyBird.classList.add('hidden');
-            }
+            // 基準下班時間
+            let std = s + 540; 
+            if (std > maxE) std = maxE;
+            document.getElementById('standardOff').textContent = toS(std);
 
-            // 應下班時間 (8h + 1h 休息)
-            let stdOff = start + 540; 
-            if (stdOff > limitEnd) stdOff = limitEnd;
-            document.getElementById('standardOff').textContent = toStr(stdOff);
+            // 假單計算 (30分進位)
+            const lAct = toM(leaveEl.value);
+            let gap = std - lAct;
+            let roundGap = Math.ceil(gap / 30) * 30;
+            if (roundGap < 0) roundGap = 0;
 
-            // 請假計算
-            const leaveAct = toMin(leaveTimeInput.value);
-            let gap = stdOff - leaveAct;
-            
-            // 30分鐘單位進位 (無條件進位確保工時充足)
-            let roundedGap = Math.ceil(gap / 30) * 30;
-            if (roundedGap < 0) roundedGap = 0;
-
-            // 假單區間：從 17:30 往回推
-            const sysStart = sysLimitEnd - roundedGap;
-            
-            document.getElementById('sysStart').textContent = toStr(sysStart);
+            document.getElementById('sysStart').textContent = toS(sysE - roundGap);
             document.getElementById('sysEnd').textContent = "17:30";
-            document.getElementById('leaveHours').textContent = `${(roundedGap / 60).toFixed(1)} hr`;
-
-            // 實際簽退要求：應下班時間 - 進位後的請假分鐘
-            // 這邊是為了告訴使用者，因為假單請了 roundedGap，你最快幾點可以走
-            const checkOutReq = stdOff - roundedGap;
-            document.getElementById('actualCheckOut').textContent = toStr(checkOutReq);
+            document.getElementById('leaveHours').textContent = (roundGap / 60).toFixed(1);
+            document.getElementById('actualCheckOut').textContent = toS(std - roundGap);
         }
 
         document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
-        [startTimeInput, leaveTimeInput].forEach(el => el.addEventListener('input', update));
-        
-        update();
+        [startEl, leaveEl].forEach(el => el.addEventListener('input', run));
+        run();
     </script>
 </body>
 </html>
