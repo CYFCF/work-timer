@@ -13,10 +13,10 @@
                 extend: { 
                     colors: { 
                         jp: {
-                            red: '#FF4D4D',
-                            blue: '#3399FF',
-                            yellow: '#FFCC00',
-                            bg: '#FAF9F6'
+                            red: '#FF4D4D',   /* 活力紅 */
+                            blue: '#3399FF',  /* 清爽藍 */
+                            yellow: '#FFCC00',/* 閃耀黃 */
+                            bg: '#FAF9F6'     /* 和紙白 */
                         }
                     } 
                 } 
@@ -30,19 +30,23 @@
             font-family: 'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif; 
             margin: 0;
             padding: 0;
-            /* 背景圖優化：自動適配電腦與手機介面 */
-            background-image: url('p1.jpg');
-            background-repeat: no-repeat;
-            background-position: top center; /* 讓圖案頂部的裝飾保持可見 */
-            background-attachment: fixed;   /* 滾動時背景固定，增加質感 */
-            background-size: cover;          /* 確保圖案填滿螢幕且比例正確 */
             min-height: 100vh;
+            background-color: #FAF9F6;
+            /* 自定義 CSS 日系幾何背景：適配所有螢幕 */
+            background-image: 
+                radial-gradient(#FF4D4D 10%, transparent 10%),
+                radial-gradient(#3399FF 10%, transparent 10%),
+                linear-gradient(45deg, transparent 48%, #E5E7EB 48%, #E5E7EB 52%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, #E5E7EB 48%, #E5E7EB 52%, transparent 52%);
+            background-size: 60px 60px, 60px 60px, 80px 80px, 80px 80px;
+            background-position: 0 0, 30px 30px, 0 0, 0 0;
+            background-attachment: fixed;
         }
 
-        /* 增加毛玻璃質感，確保卡片內容不受背景圖干擾 */
+        /* 強化卡片的可讀性 */
         .jp-pop-card { 
-            background: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(8px); 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(5px);
             border: 4px solid #1A1A1A; 
             box-shadow: 8px 8px 0px #1A1A1A; 
             transition: all 0.1s; 
@@ -54,7 +58,7 @@
         }
 
         .jp-pop-btn { 
-            background: rgba(255, 255, 255, 0.9); 
+            background: white; 
             border: 3px solid #1A1A1A; 
             box-shadow: 4px 4px 0px #1A1A1A; 
         }
@@ -76,16 +80,10 @@
             z-index: 10;
         }
         
-        /* 標題圖示樣式 */
         .app-icon {
-            width: 45px;
-            height: 45px;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
-        }
-
-        /* 電腦版適配：如果螢幕太寬，限制主內容寬度 */
-        @media (min-width: 768px) {
-            body { background-position: center top; }
         }
     </style>
 </head>
@@ -110,12 +108,12 @@
 
         <!-- 設定區域 -->
         <div class="grid grid-cols-2 gap-6">
-            <div onclick="openPicker('start')" class="jp-pop-card p-5 rounded-2xl cursor-pointer bg-white">
+            <div onclick="openPicker('start')" class="jp-pop-card p-5 rounded-2xl cursor-pointer">
                 <div class="jp-label">上班 START</div>
                 <p class="text-[10px] font-black text-slate-400 mt-2">簽到時刻</p>
                 <p id="displayStart" class="text-4xl font-black text-slate-800 leading-none">08:30</p>
             </div>
-            <div onclick="openPicker('leave')" class="jp-pop-card p-5 rounded-2xl cursor-pointer bg-white">
+            <div onclick="openPicker('leave')" class="jp-pop-card p-5 rounded-2xl cursor-pointer">
                 <div class="jp-label">下班 END</div>
                 <p class="text-[10px] font-black text-slate-400 mt-2">預計離開</p>
                 <p id="displayLeave" class="text-4xl font-black text-jp-blue leading-none">16:00</p>
@@ -136,21 +134,21 @@
 
             <div class="flex items-center gap-4 bg-white border-3 border-slate-900 p-5 rounded-2xl shadow-inner">
                 <div class="flex-1 text-center">
-                    <p class="text-[10px] font-black text-slate-400 mb-1">開始時刻</p>
-                    <p id="sysStart" class="text-4xl font-black text-slate-800">16:30</p>
+                    <p class="text-[10px] font-black text-slate-400 mb-1 uppercase">開始時刻</p>
+                    <p id="sysStart" class="text-4xl font-black text-slate-800 leading-none">16:30</p>
                 </div>
                 <div class="text-slate-800 text-2xl animate-bounce"><i class="fa-solid fa-arrow-right"></i></div>
                 <div class="flex-1 text-center">
-                    <p class="text-[10px] font-black text-slate-400 mb-1">結束時刻</p>
-                    <p id="sysEnd" class="text-4xl font-black text-slate-800">17:30</p>
+                    <p class="text-[10px] font-black text-slate-400 mb-1 uppercase">結束時刻</p>
+                    <p id="sysEnd" class="text-4xl font-black text-slate-800 leading-none">17:30</p>
                 </div>
             </div>
         </section>
 
         <!-- 打卡簽退建議 -->
         <section class="jp-pop-card bg-jp-blue rounded-[2.5rem] p-8 text-center border-4 border-slate-900 shadow-[12px_12px_0px_#1A1A1A]">
-            <p class="text-[11px] font-black text-white/90 uppercase tracking-[0.4em] mb-3 text-center">最速打卡可能時間</p>
-            <p id="actualCheckOut" class="text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)]">16:30</p>
+            <p class="text-[11px] font-black text-white/90 uppercase tracking-[0.4em] mb-3">最速打卡可能時間</p>
+            <p id="actualCheckOut" class="text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)] leading-none">16:30</p>
             <div class="mt-6 inline-flex items-center gap-2 bg-jp-yellow text-slate-900 px-6 py-2 rounded-full text-xs font-black border-2 border-slate-900 shadow-[3px_3px_0px_#1A1A1A]">
                 <i class="fa-solid fa-circle-check"></i> 以後、簽退OK！
             </div>
@@ -168,7 +166,7 @@
             <div class="flex justify-between items-center mb-8">
                 <h3 class="font-black text-slate-800 dark:text-white tracking-widest text-lg">時間設定</h3>
                 <div class="flex bg-slate-100 dark:bg-slate-800 rounded-full p-1 border-2 border-slate-800">
-                    <button onclick="toggleMode('key')" id="btnKey" class="px-6 py-2 rounded-full text-xs font-black bg-jp-blue text-white shadow-[2px_2px_0px_#1A1A1A]">輸入</button>
+                    <button onclick="toggleMode('key')" id="btnKey" class="px-6 py-2 rounded-full text-xs font-black bg-jp-blue text-white transition-all shadow-[2px_2px_0px_#1A1A1A]">輸入</button>
                     <button onclick="toggleMode('wheel')" id="btnWheel" class="px-6 py-2 rounded-full text-xs font-black text-slate-400">滾輪</button>
                 </div>
             </div>
@@ -180,7 +178,7 @@
             <div id="modeWheel" class="hidden justify-center items-center gap-6 h-60 overflow-hidden relative">
                 <div class="absolute h-16 w-full border-y-4 border-slate-800/20 pointer-events-none"></div>
                 <div class="w-24 text-center overflow-y-scroll snap-y snap-mandatory no-scrollbar" id="wheelH"></div>
-                <div class="text-4xl font-black">:</div>
+                <div class="text-4xl font-black text-slate-800 dark:text-white">:</div>
                 <div class="w-24 text-center overflow-y-scroll snap-y snap-mandatory no-scrollbar" id="wheelM"></div>
             </div>
             <div class="flex gap-4 mt-10">
