@@ -7,178 +7,220 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: { light: '#4F46E5', dark: '#818CF8' } } } } }
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: { 50: '#EEF2FF', 500: '#6366F1', 600: '#4F46E5', 700: '#4338CA' } } } } }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .wheel-active { cursor: ns-resize; transition: all 0.2s; }
-        .wheel-active:active { opacity: 0.5; transform: scale(0.9); }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+TC:wght@500;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8FAFC; }
+        .fun-font { font-family: 'Fredoka', sans-serif; }
+        .neumorph { box-shadow: 8px 8px 16px #d1d5db, -8px -8px 16px #ffffff; }
+        .dark .neumorph { box-shadow: 8px 8px 16px #0f172a, -8px -8px 16px #1e293b; }
+        .active-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { 0% { transform: scale(0.9); } 100% { transform: scale(1); } }
+        .wheel-item { height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; opacity: 0.3; transition: 0.2s; }
+        .wheel-item.active { opacity: 1; font-weight: bold; font-size: 2rem; color: #6366F1; }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors">
+<body class="dark:bg-slate-950 transition-colors duration-500">
 
-    <main class="max-w-md mx-auto p-8 space-y-10">
+    <main class="max-w-md mx-auto min-h-screen p-6 flex flex-col gap-8">
         
-        <header class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tight italic">差假計算器</h1>
-            <button id="themeToggle" class="text-slate-400 hover:text-brand-light transition-colors">
-                <i class="fa-solid fa-moon dark:hidden"></i>
-                <i class="fa-solid fa-sun hidden dark:block"></i>
+        <!-- Header -->
+        <header class="flex justify-between items-center py-4">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">差假計算器</h1>
+                <p class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest">Work-Life Balance</p>
+            </div>
+            <button id="themeToggle" class="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 neumorph flex items-center justify-center text-xl">
+                <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i>
             </button>
         </header>
 
-        <!-- 第一組：簽到時間 -->
-        <section class="space-y-4 group">
-            <div class="flex justify-between items-center">
-                <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">01 簽到時間</label>
-                <span id="earlyBird" class="hidden text-[10px] text-amber-500 font-bold border border-amber-500/20 px-2 py-0.5 rounded">以 08:00 計</span>
-            </div>
-            
-            <div class="flex items-center gap-2">
-                <div class="flex items-center text-7xl mono font-bold bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-800">
-                    <div id="startH" class="wheel-active w-[1.2em] text-center" data-type="H" data-id="start">08</div>
-                    <span class="text-slate-200 dark:text-slate-800 mx-1">:</span>
-                    <div id="startM" class="wheel-active w-[1.2em] text-center" data-type="M" data-id="start">30</div>
+        <!-- 輸入大卡片 -->
+        <div class="space-y-6">
+            <!-- 簽到 -->
+            <div onclick="openPicker('start')" class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] neumorph cursor-pointer hover:scale-[1.02] transition-transform active-pop">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">01 我幾點到的？</span>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
                 </div>
-                <button onclick="manualInput('start')" class="p-4 text-slate-300 hover:text-brand-light"><i class="fa-solid fa-keyboard"></i></button>
+                <div class="flex items-baseline gap-2">
+                    <span id="displayStart" class="text-6xl font-black fun-font text-slate-700 dark:text-slate-200">08:30</span>
+                    <span id="statusEmoji" class="text-2xl">☕</span>
+                </div>
             </div>
-            <div class="flex justify-between text-xs text-slate-400 px-2">
-                <span>正常應下班時間</span>
-                <span id="standardOff" class="mono font-bold text-slate-600 dark:text-slate-400">17:30</span>
+
+            <!-- 離開 -->
+            <div onclick="openPicker('leave')" class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] neumorph cursor-pointer hover:scale-[1.02] transition-transform active-pop">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">02 想幾點走？</span>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+                </div>
+                <span id="displayLeave" class="text-6xl font-black fun-font text-brand-500">16:00</span>
+            </div>
+        </div>
+
+        <!-- 最終魔術結果 -->
+        <section class="mt-4 relative">
+            <div class="absolute -top-4 left-6 bg-brand-600 text-white text-[10px] font-black px-3 py-1 rounded-full z-10 shadow-lg">
+                最快簽退要求
+            </div>
+            <div class="bg-slate-900 dark:bg-brand-600 rounded-[3rem] p-10 text-center shadow-2xl overflow-hidden relative">
+                <div class="absolute top-0 right-0 opacity-10 text-9xl -mr-10 -mt-10 italic font-black">GO</div>
+                <p id="actualCheckOut" class="text-7xl font-black fun-font text-white tracking-tighter">16:30</p>
+                <div class="mt-4 flex items-center justify-center gap-2 text-brand-200">
+                    <span class="h-px w-8 bg-current opacity-30"></span>
+                    <span class="text-xs font-bold uppercase tracking-widest">可以打卡下班了</span>
+                    <span class="h-px w-8 bg-current opacity-30"></span>
+                </div>
             </div>
         </section>
 
-        <!-- 第二組：預計離開 -->
-        <section class="space-y-4 group">
-            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block">02 預計離開時間</label>
-            <div class="flex items-center gap-2">
-                <div class="flex items-center text-7xl mono font-bold bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 text-brand-light">
-                    <div id="leaveH" class="wheel-active w-[1.2em] text-center" data-type="H" data-id="leave">16</div>
-                    <span class="opacity-20 mx-1">:</span>
-                    <div id="leaveM" class="wheel-active w-[1.2em] text-center" data-type="M" data-id="leave">00</div>
-                </div>
-                <button onclick="manualInput('leave')" class="p-4 text-slate-300 hover:text-brand-light"><i class="fa-solid fa-keyboard"></i></button>
+        <!-- 假單細節 -->
+        <div class="flex justify-between px-4 text-slate-400">
+            <div class="text-center">
+                <p class="text-[10px] font-bold uppercase">假單區間</p>
+                <p id="sysRange" class="text-sm font-black text-slate-600 dark:text-slate-300">16:30 - 17:30</p>
             </div>
-        </section>
-
-        <!-- 結果區 -->
-        <section class="space-y-4">
-            <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-3xl p-6 border border-indigo-100 dark:border-indigo-800">
-                <div class="flex justify-between text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4">
-                    <span>系統假單區間</span>
-                    <span>單位 30m</span>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span id="sysRange" class="text-2xl mono font-bold">16:30 - 17:30</span>
-                    <span class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-xs mono font-bold"><span id="leaveHours">1.0</span>h</span>
-                </div>
+            <div class="w-px h-8 bg-slate-200 dark:bg-slate-800"></div>
+            <div class="text-center">
+                <p class="text-[10px] font-bold uppercase">請假時數</p>
+                <p class="text-sm font-black text-slate-600 dark:text-slate-300"><span id="leaveHours">1.0</span> 小時</p>
             </div>
-
-            <div class="bg-slate-900 dark:bg-brand-light text-white rounded-[2.5rem] p-8 shadow-2xl">
-                <p class="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50 mb-4 text-center">實際簽退要求時間</p>
-                <p id="actualCheckOut" class="text-6xl mono font-bold tracking-tighter text-center">16:30</p>
-            </div>
-        </section>
-
+        </div>
     </main>
 
-    <!-- 彈出輸入層 -->
-    <div id="inputModal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
-        <div class="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-8 shadow-2xl space-y-6">
-            <h3 id="modalTitle" class="text-center font-bold text-slate-400 uppercase tracking-widest text-xs">輸入時間</h3>
-            <div class="flex justify-center">
-                <input type="text" id="modalValue" maxlength="4" placeholder="0830"
-                    class="w-full text-center text-6xl mono font-bold bg-transparent outline-none border-b-4 border-brand-light pb-2">
+    <!-- Google 風格的時間選擇彈窗 -->
+    <div id="pickerModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-md items-end sm:items-center justify-center transition-all">
+        <div class="bg-white dark:bg-slate-800 w-full sm:max-w-sm rounded-t-[3rem] sm:rounded-[3rem] p-8 shadow-2xl animate-pop">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-lg font-black dark:text-white">設定時間</h3>
+                <div class="flex bg-slate-100 dark:bg-slate-700 rounded-xl p-1">
+                    <button onclick="toggleInputMode('wheel')" id="btnWheel" class="px-4 py-1 rounded-lg text-xs font-bold bg-white dark:bg-slate-500 shadow-sm transition-all">滾輪</button>
+                    <button onclick="toggleInputMode('key')" id="btnKey" class="px-4 py-1 rounded-lg text-xs font-bold text-slate-400 transition-all">輸入</button>
+                </div>
             </div>
-            <div class="flex gap-4">
-                <button onclick="closeModal()" class="flex-1 py-4 text-slate-400 font-bold">取消</button>
-                <button onclick="saveModal()" class="flex-1 py-4 bg-brand-light text-white rounded-2xl font-bold shadow-lg shadow-indigo-500/40">確認</button>
+
+            <!-- 滾輪模式內容 -->
+            <div id="modeWheel" class="flex justify-center items-center gap-4 h-48 overflow-hidden relative">
+                <div class="absolute h-12 w-full border-y-2 border-brand-500/20 pointer-events-none"></div>
+                <div class="w-20 text-center overflow-y-scroll snap-y snap-mandatory scroll-smooth" id="wheelH"></div>
+                <div class="text-2xl font-bold">:</div>
+                <div class="w-20 text-center overflow-y-scroll snap-y snap-mandatory scroll-smooth" id="wheelM"></div>
+            </div>
+
+            <!-- 輸入模式內容 -->
+            <div id="modeKey" class="hidden flex-col items-center py-10">
+                <input type="text" id="manualValue" maxlength="4" placeholder="0830"
+                    class="w-full text-center text-6xl font-black fun-font bg-transparent border-b-4 border-brand-500 outline-none pb-2 text-slate-700 dark:text-white">
+                <p class="mt-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">請輸入四位數字 如 1600</p>
+            </div>
+
+            <div class="flex gap-4 mt-8">
+                <button onclick="closePicker()" class="flex-1 py-4 text-slate-400 font-bold hover:bg-slate-50 dark:hover:bg-slate-700 rounded-2xl transition-all">取消</button>
+                <button onclick="confirmPicker()" class="flex-1 py-4 bg-brand-500 text-white rounded-2xl font-bold shadow-xl shadow-indigo-500/30 hover:bg-brand-600 active:scale-95 transition-all">完成</button>
             </div>
         </div>
     </div>
 
     <script>
-        const state = { startH: 8, startM: 30, leaveH: 16, leaveM: 0 };
-        let activeTarget = ''; 
+        let currentState = { target: 'start', start: {h: 8, m: 30}, leave: {h: 16, m: 0} };
+        let inputMode = 'wheel';
 
-        function updateUI() {
-            document.getElementById('startH').textContent = state.startH.toString().padStart(2, '0');
-            document.getElementById('startM').textContent = state.startM.toString().padStart(2, '0');
-            document.getElementById('leaveH').textContent = state.leaveH.toString().padStart(2, '0');
-            document.getElementById('leaveM').textContent = state.leaveM.toString().padStart(2, '0');
-            calculate();
+        // 初始化滾輪內容
+        function createWheels() {
+            const hWheel = document.getElementById('wheelH');
+            const mWheel = document.getElementById('wheelM');
+            for(let i=0; i<24; i++) hWheel.innerHTML += `<div class="wheel-item snap-center" data-val="${i}">${i.toString().padStart(2,'0')}</div>`;
+            for(let i=0; i<60; i++) mWheel.innerHTML += `<div class="wheel-item snap-center" data-val="${i}">${i.toString().padStart(2,'0')}</div>`;
+            
+            [hWheel, mWheel].forEach(w => {
+                w.addEventListener('scroll', () => {
+                    const items = w.querySelectorAll('.wheel-item');
+                    const center = w.scrollTop + w.offsetHeight/2;
+                    items.forEach(item => {
+                        const dist = Math.abs(item.offsetTop + item.offsetHeight/2 - center);
+                        item.classList.toggle('active', dist < 20);
+                    });
+                });
+            });
         }
 
-        // 滾輪邏輯
-        document.querySelectorAll('.wheel-active').forEach(el => {
-            let startY = 0;
-            const type = el.dataset.type;
-            const key = el.id;
-
-            const handleUpdate = (delta) => {
-                const max = (type === 'H') ? 23 : 59;
-                if (delta > 0) state[key] = (state[key] - 1 + (max + 1)) % (max + 1);
-                else state[key] = (state[key] + 1) % (max + 1);
-                updateUI();
-            };
-
-            el.addEventListener('wheel', (e) => { e.preventDefault(); handleUpdate(e.deltaY); }, { passive: false });
-            el.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
-            el.addEventListener('touchmove', (e) => {
-                const diff = startY - e.touches[0].clientY;
-                if (Math.abs(diff) > 25) { handleUpdate(diff); startY = e.touches[0].clientY; }
-            }, { passive: true });
-            el.addEventListener('click', () => handleUpdate(-1));
-        });
-
-        // 鍵盤輸入邏輯
-        function manualInput(target) {
-            activeTarget = target;
-            document.getElementById('modalTitle').textContent = target === 'start' ? '設定簽到時間' : '設定離開時間';
-            document.getElementById('modalValue').value = '';
-            document.getElementById('inputModal').classList.remove('hidden');
-            document.getElementById('inputModal').classList.add('flex');
-            document.getElementById('modalValue').focus();
+        function openPicker(target) {
+            currentState.target = target;
+            const modal = document.getElementById('pickerModal');
+            modal.classList.replace('hidden', 'flex');
+            
+            // 同步目前的數值到滾輪位置
+            const h = currentState[target].h;
+            const m = currentState[target].m;
+            setTimeout(() => {
+                document.getElementById('wheelH').scrollTop = h * 40;
+                document.getElementById('wheelM').scrollTop = m * 40;
+            }, 50);
         }
 
-        function closeModal() { document.getElementById('inputModal').classList.replace('flex', 'hidden'); }
+        function closePicker() { document.getElementById('pickerModal').classList.replace('flex', 'hidden'); }
 
-        function saveModal() {
-            const val = document.getElementById('modalValue').value.padStart(4, '0');
-            const h = parseInt(val.slice(0, 2));
-            const m = parseInt(val.slice(2, 4));
-            if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
-                state[activeTarget + 'H'] = h;
-                state[activeTarget + 'M'] = m;
-                updateUI();
-                closeModal();
+        function toggleInputMode(mode) {
+            inputMode = mode;
+            document.getElementById('modeWheel').classList.toggle('hidden', mode === 'key');
+            document.getElementById('modeKey').classList.toggle('hidden', mode === 'wheel');
+            document.getElementById('btnWheel').className = mode === 'wheel' ? "px-4 py-1 rounded-lg text-xs font-bold bg-white dark:bg-slate-500 shadow-sm transition-all" : "px-4 py-1 rounded-lg text-xs font-bold text-slate-400";
+            document.getElementById('btnKey').className = mode === 'key' ? "px-4 py-1 rounded-lg text-xs font-bold bg-white dark:bg-slate-500 shadow-sm transition-all" : "px-4 py-1 rounded-lg text-xs font-bold text-slate-400";
+        }
+
+        function confirmPicker() {
+            let h, m;
+            if (inputMode === 'wheel') {
+                const hWheel = document.getElementById('wheelH');
+                const mWheel = document.getElementById('wheelM');
+                h = Math.round(hWheel.scrollTop / 40);
+                m = Math.round(mWheel.scrollTop / 40);
             } else {
-                alert('時間格式錯誤（請輸入如 0830）');
+                const val = document.getElementById('manualValue').value.padStart(4, '0');
+                h = parseInt(val.slice(0, 2));
+                m = parseInt(val.slice(2, 4));
+            }
+
+            if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
+                currentState[currentState.target] = {h, m};
+                updateMainUI();
+                closePicker();
             }
         }
 
-        function calculate() {
-            const startTotal = Math.max(480, state.startH * 60 + state.startM);
-            document.getElementById('earlyBird').classList.toggle('hidden', (state.startH * 60 + state.startM) >= 480);
-            
-            let stdOff = Math.min(1080, startTotal + 540);
-            document.getElementById('standardOff').textContent = mToT(stdOff);
+        function updateMainUI() {
+            const startStr = `${currentState.start.h.toString().padStart(2,'0')}:${currentState.start.m.toString().padStart(2,'0')}`;
+            const leaveStr = `${currentState.leave.h.toString().padStart(2,'0')}:${currentState.leave.m.toString().padStart(2,'0')}`;
+            document.getElementById('displayStart').textContent = startStr;
+            document.getElementById('displayLeave').textContent = leaveStr;
 
-            const leaveTotal = state.leaveH * 60 + state.leaveM;
-            let gap = Math.max(0, Math.ceil((stdOff - leaveTotal) / 30) * 30);
+            // 表情符號互動
+            const h = currentState.start.h;
+            document.getElementById('statusEmoji').textContent = h < 8 ? "🚀" : (h === 8 ? "☕" : "👀");
+
+            calculate();
+        }
+
+        function calculate() {
+            const sTotal = Math.max(480, currentState.start.h * 60 + currentState.start.m);
+            const stdOff = Math.min(1080, sTotal + 540);
+            const lTotal = currentState.leave.h * 60 + currentState.leave.m;
             
+            let gap = Math.max(0, Math.ceil((stdOff - lTotal) / 30) * 30);
+            
+            document.getElementById('actualCheckOut').textContent = mToT(stdOff - gap);
             document.getElementById('sysRange').textContent = `${mToT(1050 - gap)} - 17:30`;
             document.getElementById('leaveHours').textContent = (gap / 60).toFixed(1);
-            document.getElementById('actualCheckOut').textContent = mToT(stdOff - gap);
         }
 
         function mToT(m) { return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`; }
 
         document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
-        updateUI();
+        
+        createWheels();
+        updateMainUI();
     </script>
 </body>
 </html>
