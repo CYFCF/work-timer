@@ -33,7 +33,6 @@
         .jp-pop-card:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px #1A1A1A; }
         .jp-pop-btn { background: white; border: 3px solid #1A1A1A; box-shadow: 4px 4px 0px #1A1A1A; }
         
-        /* 滾輪核心樣式 */
         .wheel-outer { position: relative; height: 150px; overflow: hidden; background: #f9f9f9; border-radius: 1rem; border: 2px solid #eee; }
         .wheel-container { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; -ms-overflow-style: none; scrollbar-width: none; }
         .wheel-container::-webkit-scrollbar { display: none; }
@@ -43,6 +42,12 @@
 
         .jp-label { position: absolute; top: -12px; left: 15px; background: #1A1A1A; color: white; padding: 2px 10px; font-size: 10px; font-weight: 900; border-radius: 4px; z-index: 10; }
         .app-icon { width: 42px; height: 42px; object-fit: contain; }
+        
+        /* 準時下班區間特大化陰影 */
+        .jp-pop-card-large {
+            background: #3399FF; border: 4px solid #1A1A1A; 
+            box-shadow: 12px 12px 0px #1A1A1A; transition: all 0.1s; position: relative;
+        }
     </style>
 </head>
 <body class="dark:bg-slate-900 transition-colors">
@@ -61,7 +66,6 @@
             </button>
         </header>
 
-        <!-- 設定卡片 -->
         <div class="grid grid-cols-2 gap-6">
             <div onclick="openPicker('start')" class="jp-pop-card p-5 rounded-2xl cursor-pointer">
                 <div class="jp-label">上班 START</div>
@@ -75,7 +79,6 @@
             </div>
         </div>
 
-        <!-- 假單區間 -->
         <section class="jp-pop-card bg-jp-yellow rounded-[2.5rem] p-7 border-4 border-slate-900 shadow-[10px_10px_0px_#1A1A1A] space-y-6">
             <div class="flex justify-between items-center text-left">
                 <div class="flex flex-col">
@@ -99,12 +102,12 @@
             </div>
         </section>
 
-        <!-- 簽退建議 -->
-        <section class="jp-pop-card bg-jp-blue rounded-[2.5rem] p-8 text-center border-4 border-slate-900 shadow-[12px_12px_0px_#1A1A1A]">
-            <p class="text-[11px] font-black text-white/90 uppercase tracking-[0.4em] mb-3">最速打卡可能時間</p>
-            <p id="actualCheckOut" class="text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)] leading-none">16:30</p>
-            <div class="mt-6 inline-flex items-center gap-2 bg-jp-yellow text-slate-900 px-6 py-2 rounded-full text-xs font-black border-2 border-slate-900 shadow-[3px_3px_0px_#1A1A1A]">
-                <i class="fa-solid fa-circle-check"></i> 以後、簽退OK！
+        <!-- 準時下班：加大區塊 -->
+        <section class="jp-pop-card-large rounded-[3rem] p-10 text-center border-4 border-slate-900">
+            <p class="text-[13px] font-black text-white/90 uppercase tracking-[0.5em] mb-4 text-center">最速打卡可能時間</p>
+            <p id="actualCheckOut" class="text-8xl font-black text-white tracking-tighter drop-shadow-[5px_5px_0px_rgba(0,0,0,0.3)] leading-none">16:30</p>
+            <div class="mt-8 inline-flex items-center gap-3 bg-jp-yellow text-slate-900 px-8 py-3 rounded-full text-sm font-black border-2 border-slate-900 shadow-[4px_4px_0px_#1A1A1A]">
+                <i class="fa-solid fa-circle-check text-lg"></i> 以後、簽退OK！
             </div>
         </section>
 
@@ -113,7 +116,7 @@
         </footer>
     </main>
 
-    <!-- 彈窗內容 -->
+    <!-- 複合式選擇彈窗 -->
     <div id="pickerModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-md items-end sm:items-center justify-center p-6">
         <div class="bg-white dark:bg-slate-900 w-full sm:max-w-sm rounded-[3rem] p-8 border-4 border-slate-800 shadow-[15px_15px_0px_#1A1A1A] overflow-hidden">
             <div class="flex justify-between items-center mb-8">
@@ -124,14 +127,12 @@
                 </div>
             </div>
 
-            <!-- 輸入模式 -->
             <div id="modeKey" class="flex flex-col items-center py-6">
                 <input type="tel" id="manualValue" maxlength="4" placeholder="0830"
                     class="w-full text-center text-7xl font-black bg-transparent border-b-8 border-jp-blue outline-none pb-2 text-slate-800 dark:text-white placeholder:opacity-20">
                 <p class="mt-8 text-[12px] font-black text-slate-400 uppercase tracking-widest">請輸入 4 位數 (自動跳轉)</p>
             </div>
 
-            <!-- 滾輪模式 (分時獨立) -->
             <div id="modeWheel" class="hidden flex justify-center items-center gap-4 py-4">
                 <div class="wheel-outer w-24">
                     <div class="wheel-mask"></div>
@@ -160,7 +161,7 @@
             const mWheel = document.getElementById('wheelM');
             
             const generateItems = (count, container) => {
-                container.innerHTML = '<div style="height: 50px;"></div>'; // Spacer
+                container.innerHTML = '<div style="height: 50px;"></div>';
                 for(let i=0; i<count; i++) {
                     const item = document.createElement('div');
                     item.className = 'wheel-item';
@@ -168,7 +169,7 @@
                     item.textContent = i.toString().padStart(2, '0');
                     container.appendChild(item);
                 }
-                container.innerHTML += '<div style="height: 50px;"></div>'; // Spacer
+                container.innerHTML += '<div style="height: 50px;"></div>';
             };
 
             generateItems(24, hWheel);
@@ -191,10 +192,8 @@
             document.getElementById('pickerModal').classList.replace('hidden', 'flex');
             const input = document.getElementById('manualValue');
             input.value = '';
-            
             const h = state[target].h;
             const m = state[target].m;
-            
             setTimeout(() => {
                 document.getElementById('wheelH').scrollTop = h * 50;
                 document.getElementById('wheelM').scrollTop = m * 50;
