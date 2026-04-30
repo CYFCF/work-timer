@@ -2,7 +2,7 @@
 <html lang="zh-TW" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>差假計算器</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -18,50 +18,56 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; }
+        body { font-family: 'Noto Sans TC', sans-serif; touch-action: manipulation; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        input::placeholder { color: #cbd5e1; font-size: 0.8em; }
+        .wheel-container { cursor: ns-resize; user-select: none; transition: transform 0.1s; }
+        .wheel-container:active { transform: scale(0.95); opacity: 0.7; }
+        /* 隱藏預設捲動條 */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
 
-    <main class="max-w-md mx-auto p-8 space-y-10">
+    <main class="max-w-md mx-auto p-8 space-y-12">
         
-        <!-- Header -->
         <header class="flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-tight">差假計算器</h1>
-            <button id="themeToggle" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center">
-                <i class="fa-solid fa-circle-half-stroke text-slate-400"></i>
+            <button id="themeToggle" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center text-slate-400">
+                <i class="fa-solid fa-circle-half-stroke"></i>
             </button>
         </header>
 
-        <!-- 簽到時間 -->
+        <!-- 簽到時間滾輪 -->
         <section class="space-y-4">
             <div class="flex justify-between items-end">
                 <label class="text-xs font-bold text-slate-400 tracking-widest uppercase">01 簽到時間</label>
                 <span id="earlyBird" class="hidden text-[10px] text-amber-500 font-bold">以 08:00 計算</span>
             </div>
-            <input type="text" id="startTime" value="08:30" maxlength="5" placeholder="HH:mm"
-                class="w-full bg-transparent text-6xl mono font-bold outline-none border-none p-0 focus:ring-0">
+            <div class="flex items-center text-7xl mono font-bold gap-2">
+                <div class="wheel-container" id="startH">08</div>
+                <div class="text-slate-200 dark:text-slate-800">:</div>
+                <div class="wheel-container" id="startM">30</div>
+            </div>
             <div class="h-px bg-slate-200 dark:bg-slate-800 w-full"></div>
             <div class="flex justify-between text-[11px] text-slate-400 font-medium">
-                <span>正常應簽退 (不請假)</span>
-                <span id="standardOff" class="mono font-bold">17:30</span>
+                <span>應簽退基準</span>
+                <span id="standardOff" class="mono font-bold text-slate-600 dark:text-slate-400">17:30</span>
             </div>
         </section>
 
-        <!-- 離開時間 -->
+        <!-- 離開時間滾輪 -->
         <section class="space-y-4">
             <label class="text-xs font-bold text-slate-400 tracking-widest uppercase">02 預計離開</label>
-            <input type="text" id="leaveTime" value="16:00" maxlength="5" placeholder="HH:mm"
-                class="w-full bg-transparent text-6xl mono font-bold outline-none border-none p-0 focus:ring-0 text-brand-light">
+            <div class="flex items-center text-7xl mono font-bold gap-2 text-brand-light">
+                <div class="wheel-container" id="leaveH">16</div>
+                <div class="opacity-20">:</div>
+                <div class="wheel-container" id="leaveM">00</div>
+            </div>
             <div class="h-px bg-slate-200 dark:bg-slate-800 w-full"></div>
         </section>
 
         <!-- 結果顯示區 -->
-        <section class="space-y-6 pt-2">
-            
-            <!-- 系統假單建議 -->
+        <section class="space-y-6 pt-4">
             <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">系統假單建議區間</p>
                 <div class="flex items-center justify-between">
@@ -76,79 +82,94 @@
                 </div>
             </div>
 
-            <!-- 實際簽退要求 -->
             <div class="bg-slate-900 dark:bg-brand-light text-white rounded-[2rem] p-7 shadow-2xl transition-all">
                 <p class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 mb-3">當日實際簽退要求時間</p>
                 <div class="flex items-baseline gap-2">
                     <span id="actualCheckOut" class="text-5xl mono font-bold tracking-tighter">16:30</span>
-                    <span class="text-sm font-bold opacity-80">以後</span>
+                    <span class="text-sm font-bold opacity-80 uppercase">Over</span>
                 </div>
             </div>
         </section>
 
-        <!-- Rules -->
-        <div class="text-[10px] text-slate-300 text-center uppercase tracking-widest">
-            30min Unit • Logic v5.1
-        </div>
+        <p class="text-center text-[10px] text-slate-300 uppercase tracking-widest">
+            Slide Up/Down to Adjust
+        </p>
 
     </main>
 
     <script>
-        const startInput = document.getElementById('startTime');
-        const leaveInput = document.getElementById('leaveTime');
-        const birdHint = document.getElementById('earlyBird');
+        // 時間數據狀態
+        const state = {
+            startH: 8, startM: 30,
+            leaveH: 16, leaveM: 0
+        };
 
-        // 自動補全時間冒號的格式化工具
-        function formatTimeInput(e) {
-            let v = e.target.value.replace(/\D/g, '');
-            if (v.length >= 3) {
-                e.target.value = v.slice(0, 2) + ':' + v.slice(2, 4);
-            } else {
-                e.target.value = v;
-            }
-            calculate();
-        }
+        // 初始化滾輪功能
+        function initWheel(id, type, min, max, step = 1) {
+            const el = document.getElementById(id);
+            let startY = 0;
 
-        function tToM(str) {
-            if(!str || !str.includes(':')) return 0;
-            const [h, m] = str.split(':').map(Number);
-            if(isNaN(h) || isNaN(m)) return 0;
-            return h * 60 + m;
-        }
+            const updateValue = (delta) => {
+                if (delta > 0) state[id] = (state[id] - step + (max + 1)) % (max + 1);
+                else state[id] = (state[id] + step) % (max + 1);
+                
+                // 分鐘強制度數 (0-59)
+                if (type === 'M' && state[id] < 0) state[id] = 59;
+                
+                el.textContent = state[id].toString().padStart(2, '0');
+                calculate();
+            };
 
-        function mToT(min) {
-            const m = Math.max(0, min);
-            const hh = Math.floor(m / 60).toString().padStart(2, '0');
-            const mm = (m % 60).toString().padStart(2, '0');
-            return `${hh}:${mm}`;
+            // 滑鼠滾輪
+            el.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                updateValue(e.deltaY);
+            }, { passive: false });
+
+            // 觸控滑動
+            el.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+            el.addEventListener('touchmove', (e) => {
+                const currentY = e.touches[0].clientY;
+                const diff = startY - currentY;
+                if (Math.abs(diff) > 20) {
+                    updateValue(diff);
+                    startY = currentY;
+                }
+            }, { passive: true });
+
+            // 點擊微調
+            el.addEventListener('click', () => updateValue(-1));
         }
 
         function calculate() {
-            let s = tToM(startInput.value);
-            if (s === 0 && startInput.value !== "00:00") return;
+            let sH = state.startH;
+            let sM = state.startM;
+            let sMinTotal = sH * 60 + sM;
 
             const MIN_S = 480;  // 08:00
             const MAX_E = 1080; // 18:00
             const SYS_E = 1050; // 17:30
+            const birdHint = document.getElementById('earlyBird');
 
-            // 防呆：08:00
-            if (s < MIN_S) {
-                s = MIN_S;
+            // 08:00 防呆
+            let effectiveStart = sMinTotal;
+            if (sMinTotal < MIN_S) {
+                effectiveStart = MIN_S;
                 birdHint.classList.remove('hidden');
             } else {
                 birdHint.classList.add('hidden');
             }
 
-            // 應下班基準
-            let stdOff = s + 540;
+            // 基準下班
+            let stdOff = effectiveStart + 540;
             if (stdOff > MAX_E) stdOff = MAX_E;
             document.getElementById('standardOff').textContent = mToT(stdOff);
 
-            // 請假計算
-            const leaveAct = tToM(leaveInput.value);
-            let gap = stdOff - leaveAct;
+            // 離開時間
+            const lMinTotal = state.leaveH * 60 + state.leaveM;
+            let gap = stdOff - lMinTotal;
             
-            // 30分鐘進位
+            // 30分鐘單位進位
             let roundedGap = Math.ceil(gap / 30) * 30;
             if (roundedGap < 0) roundedGap = 0;
 
@@ -161,8 +182,19 @@
             document.getElementById('actualCheckOut').textContent = mToT(finalCheckOut);
         }
 
-        startInput.addEventListener('input', formatTimeInput);
-        leaveInput.addEventListener('input', formatTimeInput);
+        function mToT(min) {
+            const m = Math.max(0, min);
+            const hh = Math.floor(m / 60).toString().padStart(2, '0');
+            const mm = (m % 60).toString().padStart(2, '0');
+            return `${hh}:${mm}`;
+        }
+
+        // 綁定所有滾輪
+        initWheel('startH', 'H', 0, 23);
+        initWheel('startM', 'M', 0, 59);
+        initWheel('leaveH', 'H', 0, 23);
+        initWheel('leaveM', 'M', 0, 59);
+
         document.getElementById('themeToggle').addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
         });
