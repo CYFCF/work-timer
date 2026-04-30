@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-TW" class="light"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;差假工時邏輯計算器&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>tailwind.config = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>darkMode: 'class',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>theme: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>extend: {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>colors: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>primary: '#3b82f6',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&amp;display=swap');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: 'Inter', sans-serif; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="max-w-md mx-auto px-6 py-12"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Header --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flex justify-between items-center mb-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h1 class="text-2xl font-bold tracking-tight"&gt;差假計算器&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-sm text-slate-500 dark:text-slate-400"&gt;符合系統 08:30-17:30 規範&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:ring-2 ring-primary transition-all"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span id="theme-icon"&gt;🌙&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Main Card --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 space-y-6 border border-slate-200 dark:border-slate-700"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Input 1: Sign In Time --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="space-y-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="block text-sm font-semibold"&gt;簽到時間&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="time" id="signIn" value="08:00" onchange="calculate()"</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>class="w-full bg-slate-50 dark:bg-slate-700 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary outline-none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Display Area --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-2 gap-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase"&gt;預計下班&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="offWorkTime" class="text-xl font-bold"&gt;17:00&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-xl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase"&gt;應出勤時數&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-xl font-bold"&gt;8.0 小時&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;hr class="border-slate-100 dark:border-slate-700"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Input 2: Leave Duration --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="space-y-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="block text-sm font-semibold"&gt;欲請假時數 (小時)&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;select id="leaveHours" onchange="calculate()"<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>class="w-full bg-slate-50 dark:bg-slate-700 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary outline-none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;option value="0"&gt;不請假&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;option value="0.5"&gt;0.5 小時&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;option value="1"&gt;1.0 小時&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;option value="1.5"&gt;1.5 小時&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;option value="2"&gt;2.0 小時&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;option value="4"&gt;4.0 小時&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Logic Results --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="resultBox" class="hidden space-y-4 pt-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="p-4 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 rounded-r-xl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 class="text-sm font-bold text-amber-700 dark:text-amber-400 mb-1"&gt;💡 系統假單建議填寫&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="suggestedLeave" class="text-lg font-mono font-bold text-amber-800 dark:text-amber-200"&gt;16:30 ~ 17:30&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-[10px] mt-1 opacity-70"&gt;*已對齊系統限制範圍 (08:30-17:30)&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="p-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 rounded-r-xl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 class="text-sm font-bold text-green-700 dark:text-green-400 mb-1"&gt;🏁 最早簽退時間&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="earliestExit" class="text-2xl font-bold text-green-800 dark:text-green-200 underline decoration-green-400 decoration-4 underline-offset-4"&gt;16:00 即可離開&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Rules Footer --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="mt-8 p-4 text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed bg-slate-100 dark:bg-slate-800/50 rounded-xl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;p&gt;● 午休時間固定為 12:30 ~ 13:30 (不計薪)&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;p&gt;● 系統假單填寫限制區間為 08:30 ~ 17:30&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;p&gt;● 公式：(上班時間 + 假單時間) 需滿 8 小時&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function toggleDarkMode() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const html = document.documentElement;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const icon = document.getElementById('theme-icon');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (html.classList.contains('dark')) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>html.classList.remove('dark');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon.innerText = '🌙';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>html.classList.add('dark');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon.innerText = '☀️';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function calculate() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const signInInput = document.getElementById('signIn').value;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const leaveHours = parseFloat(document.getElementById('leaveHours').value);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const resultBox = document.getElementById('resultBox');</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!signInInput) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 1. 基本下班時間計算 (含1小時午休)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const [h, m] = signInInput.split(':').map(Number);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let signDate = new Date();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>signDate.setHours(h, m, 0);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 應出勤 8 小時 + 1 小時午休 = 9 小時</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let offWorkDate = new Date(signDate.getTime() + 9 * 60 * 60 * 1000);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const offH = offWorkDate.getHours().toString().padStart(2, '0');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const offM = offWorkDate.getMinutes().toString().padStart(2, '0');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('offWorkTime').innerText = `${offH}:${offM}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (leaveHours &lt;= 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>resultBox.classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>resultBox.classList.remove('hidden');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 2. 最早簽退時間 = 預計下班時間 - 請假時數</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let exitDate = new Date(offWorkDate.getTime() - leaveHours * 60 * 60 * 1000);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const exitH = exitDate.getHours().toString().padStart(2, '0');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const exitM = exitDate.getMinutes().toString().padStart(2, '0');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('earliestExit').innerText = `${exitH}:${exitM} 即可簽退`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 3. 系統假單建議 (針對下班前請假情境)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 邏輯：系統上限 17:30，往前推請假時數</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let sysEnd = new Date();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>sysEnd.setHours(17, 30, 0);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let sysStart = new Date(sysEnd.getTime() - leaveHours * 60 * 60 * 1000);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const sSH = sysStart.getHours().toString().padStart(2, '0');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const sSM = sysStart.getMinutes().toString().padStart(2, '0');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const sEH = sysEnd.getHours().toString().padStart(2, '0');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const sEM = sysEnd.getMinutes().toString().padStart(2, '0');</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('suggestedLeave').innerText = `${sSH}:${sSM} ~ ${sEH}:${sEM}`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 初始化計算一次</p>
+<p class="p1"><span class="Apple-converted-space">        </span>window.onload = calculate;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
