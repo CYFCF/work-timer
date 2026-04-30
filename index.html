@@ -28,18 +28,21 @@
         
         body { 
             font-family: 'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif; 
-            /* 新增：全螢幕背景圖設定 */
+            margin: 0;
+            padding: 0;
+            /* 背景圖優化：響應式適配電腦與手機 */
             background-image: url('p1.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
             background-repeat: no-repeat;
-            min-height: 100 screen;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover; /* 自動縮放以填滿螢幕，且不變形 */
+            min-height: 100vh;
         }
 
-        /* 為了讓卡片在背景圖上更清晰，稍微增加一點點透明度或確保邊框夠粗 */
+        /* 增加毛玻璃質感，讓卡片在複雜背景下依然清晰 */
         .jp-pop-card { 
-            background: rgba(255, 255, 255, 0.95); 
+            background: rgba(255, 255, 255, 0.92); 
+            backdrop-filter: blur(4px); 
             border: 4px solid #1A1A1A; 
             box-shadow: 8px 8px 0px #1A1A1A; 
             transition: all 0.1s; 
@@ -77,11 +80,15 @@
             z-index: 10;
         }
         
-        /* Icon 樣式微調 */
         .app-icon {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
+        }
+
+        /* 手機版微調：減少 padding 避免內容太擠 */
+        @media (max-width: 640px) {
+            main { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -92,7 +99,7 @@
         <!-- Header -->
         <header class="flex justify-between items-center pt-4">
             <div class="flex items-center gap-3">
-                <!-- 新增：介面 Icon 圖 -->
+                <!-- 自定義介面 Icon -->
                 <img src="icon.png" alt="icon" class="app-icon">
                 <div class="relative">
                     <div class="absolute -left-1 -top-1 w-4 h-4 bg-jp-yellow rounded-full -z-10"></div>
@@ -122,8 +129,8 @@
         <section class="jp-pop-card bg-jp-yellow rounded-[2.5rem] p-7 border-4 border-slate-900 shadow-[10px_10px_0px_#1A1A1A] space-y-6">
             <div class="flex justify-between items-center">
                 <div class="flex flex-col">
-                    <span class="text-slate-800 text-[11px] font-black uppercase tracking-widest">系統假單區間</span>
-                    <span class="h-1 w-12 bg-slate-800 rounded-full"></span>
+                    <span class="text-slate-800 text-[11px] font-black uppercase tracking-widest text-left">系統假單區間</span>
+                    <span class="h-1 w-12 bg-slate-800 rounded-full mt-1"></span>
                 </div>
                 <div class="bg-white border-2 border-slate-800 px-3 py-1 rounded-xl shadow-[3px_3px_0px_#1A1A1A]">
                     <span class="text-slate-800 font-black italic"><span id="leaveHours" class="text-2xl">1.0</span> HR</span>
@@ -132,13 +139,13 @@
 
             <div class="flex items-center gap-4 bg-white border-3 border-slate-900 p-5 rounded-2xl shadow-inner">
                 <div class="flex-1 text-center">
-                    <p class="text-[10px] font-black text-slate-400 mb-1">開始時刻</p>
-                    <p id="sysStart" class="text-4xl font-black text-slate-800">16:30</p>
+                    <p class="text-[10px] font-black text-slate-400 mb-1 uppercase">開始時刻</p>
+                    <p id="sysStart" class="text-4xl font-black text-slate-800 leading-none">16:30</p>
                 </div>
                 <div class="text-slate-800 text-2xl animate-bounce"><i class="fa-solid fa-arrow-right"></i></div>
                 <div class="flex-1 text-center">
-                    <p class="text-[10px] font-black text-slate-400 mb-1">結束時刻</p>
-                    <p id="sysEnd" class="text-4xl font-black text-slate-800">17:30</p>
+                    <p class="text-[10px] font-black text-slate-400 mb-1 uppercase">結束時刻</p>
+                    <p id="sysEnd" class="text-4xl font-black text-slate-800 leading-none">17:30</p>
                 </div>
             </div>
         </section>
@@ -146,7 +153,7 @@
         <!-- 打卡簽退建議 -->
         <section class="jp-pop-card bg-jp-blue rounded-[2.5rem] p-8 text-center border-4 border-slate-900 shadow-[12px_12px_0px_#1A1A1A]">
             <p class="text-[11px] font-black text-white/90 uppercase tracking-[0.4em] mb-3">最速打卡可能時間</p>
-            <p id="actualCheckOut" class="text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)]">16:30</p>
+            <p id="actualCheckOut" class="text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)] leading-none">16:30</p>
             <div class="mt-6 inline-flex items-center gap-2 bg-jp-yellow text-slate-900 px-6 py-2 rounded-full text-xs font-black border-2 border-slate-900 shadow-[3px_3px_0px_#1A1A1A]">
                 <i class="fa-solid fa-circle-check"></i> 以後、簽退OK！
             </div>
@@ -171,12 +178,12 @@
             <div id="modeKey" class="flex flex-col items-center py-10">
                 <input type="text" id="manualValue" maxlength="4" placeholder="0830"
                     class="w-full text-center text-8xl font-black bg-transparent border-b-8 border-jp-blue outline-none pb-2 text-slate-800 dark:text-white placeholder:opacity-20">
-                <p class="mt-8 text-[12px] font-black text-slate-400 uppercase tracking-widest italic">Input 4 numbers (ex. 1630)</p>
+                <p class="mt-8 text-[12px] font-black text-slate-400 uppercase tracking-widest italic tracking-wider">Input 4 numbers (ex. 1630)</p>
             </div>
             <div id="modeWheel" class="hidden justify-center items-center gap-6 h-60 overflow-hidden relative">
                 <div class="absolute h-16 w-full border-y-4 border-slate-800/20 pointer-events-none"></div>
                 <div class="w-24 text-center overflow-y-scroll snap-y snap-mandatory no-scrollbar" id="wheelH"></div>
-                <div class="text-4xl font-black">:</div>
+                <div class="text-4xl font-black text-slate-800 dark:text-white">:</div>
                 <div class="w-24 text-center overflow-y-scroll snap-y snap-mandatory no-scrollbar" id="wheelM"></div>
             </div>
             <div class="flex gap-4 mt-10">
@@ -211,7 +218,6 @@
             state.target = target;
             document.getElementById('pickerModal').classList.replace('hidden', 'flex');
             document.getElementById('manualValue').value = '';
-            
             const h = state[target].h;
             const m = state[target].m;
             setTimeout(() => {
