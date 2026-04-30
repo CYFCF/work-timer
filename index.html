@@ -12,13 +12,12 @@
             theme: { 
                 extend: { 
                     colors: { 
-                        morandi: {
-                            blue: '#93A9D1',    /* 霧霾藍 */
-                            green: '#B9C0A3',   /* 鼠尾草綠 */
-                            rose: '#D2A3A9',    /* 灰粉色 */
-                            sand: '#E3D7D1',    /* 燕麥沙色 */
-                            slate: '#7C8B96',   /* 藍灰色 */
-                            dark: '#5B6770'     /* 深莫蘭迪 */
+                        vibrant: {
+                            orange: '#FF6B35', /* 活潑橙 */
+                            blue: '#004E98',   /* 靛青藍 */
+                            yellow: '#FFD166', /* 亮黃色 */
+                            cyan: '#06D6A0',   /* 翠綠色 */
+                            bg: '#F7F9FC'
                         }
                     } 
                 } 
@@ -26,118 +25,132 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Noto+Sans+TC:wght@400;900&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F2F2F2; color: #5B6770; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .card-shadow { box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff; }
-        .dark .card-shadow { box-shadow: 5px 5px 15px #0a0a0a; }
-        .wheel-item { height: 45px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; opacity: 0.2; transition: 0.3s; }
-        .wheel-item.active { opacity: 1; font-weight: 900; color: #93A9D1; font-size: 2.2rem; }
-        /* 自定義捲軸 */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;900&family=Noto+Sans+TC:wght@500;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F7F9FC; }
+        .outfit { font-family: 'Outfit', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 2px solid #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
+        .btn-active { transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-active:active { transform: scale(0.92); }
+        .wheel-item { height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; opacity: 0.2; transition: 0.3s; }
+        .wheel-item.active { opacity: 1; font-weight: 900; color: #FF6B35; font-size: 2.5rem; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="dark:bg-slate-900 transition-colors duration-500">
+<body class="dark:bg-slate-950 transition-colors duration-500">
 
-    <main class="max-w-md mx-auto min-h-screen p-6 space-y-8">
+    <main class="max-w-md mx-auto min-h-screen p-6 space-y-6">
         
         <!-- Header -->
-        <header class="flex justify-between items-center pt-4">
-            <h1 class="text-2xl font-black text-morandi-dark dark:text-morandi-blue tracking-tight">差假計算器</h1>
-            <button id="themeToggle" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-morandi-blue shadow-sm">
-                <i class="fa-solid fa-leaf"></i>
+        <header class="flex justify-between items-center py-4">
+            <div class="relative">
+                <div class="absolute -left-2 -top-2 w-8 h-8 bg-vibrant-yellow rounded-full -z-10 animate-pulse"></div>
+                <h1 class="text-3xl font-black text-vibrant-blue dark:text-white tracking-tighter">差假計算器</h1>
+            </div>
+            <button id="themeToggle" class="w-12 h-12 rounded-2xl bg-vibrant-blue text-white shadow-lg btn-active flex items-center justify-center">
+                <i class="fa-solid fa-bolt"></i>
             </button>
         </header>
 
-        <!-- 簽到與離開 (莫蘭迪組合) -->
+        <!-- 設定區域 (24H格式數字優先) -->
         <div class="grid grid-cols-2 gap-4">
-            <div onclick="openPicker('start')" class="bg-white dark:bg-slate-800 p-5 rounded-[2rem] card-shadow cursor-pointer active:scale-95 transition-transform">
-                <p class="text-[10px] font-black text-morandi-slate uppercase mb-2 tracking-widest">簽到時間</p>
-                <p id="displayStart" class="text-3xl font-black mono text-morandi-dark dark:text-morandi-sand">08:30</p>
+            <div onclick="openPicker('start')" class="glass-card p-6 rounded-[2.5rem] btn-active cursor-pointer relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-12 h-12 bg-vibrant-yellow/10 rounded-bl-full transition-all group-hover:w-full group-hover:h-full"></div>
+                <p class="text-[11px] font-black text-vibrant-blue uppercase tracking-widest mb-2 relative">簽到時刻</p>
+                <p id="displayStart" class="text-4xl font-black outfit text-slate-800 dark:text-white relative">08:30</p>
             </div>
-            <div onclick="openPicker('leave')" class="bg-white dark:bg-slate-800 p-5 rounded-[2rem] card-shadow cursor-pointer active:scale-95 transition-transform">
-                <p class="text-[10px] font-black text-morandi-slate uppercase mb-2 tracking-widest">預計離開</p>
-                <p id="displayLeave" class="text-3xl font-black mono text-morandi-blue">16:00</p>
+            <div onclick="openPicker('leave')" class="glass-card p-6 rounded-[2.5rem] btn-active cursor-pointer relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-12 h-12 bg-vibrant-orange/10 rounded-bl-full transition-all group-hover:w-full group-hover:h-full"></div>
+                <p class="text-[11px] font-black text-vibrant-orange uppercase tracking-widest mb-2 relative">想幾點走</p>
+                <p id="displayLeave" class="text-4xl font-black outfit text-vibrant-orange relative">16:00</p>
             </div>
         </div>
 
-        <!-- 假單區間重點區 (視覺核心) -->
-        <section class="relative bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] card-shadow border-t-4 border-morandi-blue">
-            <div class="flex justify-between items-center mb-6">
-                <div class="bg-morandi-blue/10 px-3 py-1 rounded-full">
-                    <span class="text-[10px] font-black text-morandi-blue uppercase tracking-widest">重點：系統假單建議</span>
+        <!-- 重點區：假單區間 -->
+        <section class="bg-vibrant-blue rounded-[3rem] p-8 text-white relative shadow-2xl overflow-hidden group">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+            
+            <div class="flex justify-between items-start mb-8 relative">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-vibrant-yellow">重點資訊</p>
+                    <h2 class="text-xl font-black italic">系統假單區間</h2>
                 </div>
-                <div class="text-right">
-                    <span class="text-2xl font-black mono text-morandi-blue" id="leaveHours">1.0</span>
-                    <span class="text-[10px] font-bold text-slate-400">小時</span>
+                <div class="bg-white/20 backdrop-blur-md px-4 py-2 rounded-2xl">
+                    <span class="text-2xl font-black outfit" id="leaveHours">1.0</span><span class="text-[10px] ml-1 font-bold">HR</span>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between gap-4">
-                <div class="flex-1 text-center">
-                    <p class="text-[10px] font-bold text-slate-300 mb-1 uppercase">假單起</p>
-                    <p id="sysStart" class="text-3xl font-black mono text-morandi-dark dark:text-morandi-sand">16:30</p>
+            <div class="flex items-center gap-6 relative">
+                <div class="flex-1">
+                    <p class="text-[10px] font-bold opacity-60 mb-2 uppercase tracking-widest">開始 (起)</p>
+                    <p id="sysStart" class="text-4xl font-black outfit">16:30</p>
                 </div>
-                <div class="text-morandi-sand text-xl">
-                    <i class="fa-solid fa-ellipsis-h"></i>
+                <div class="w-12 h-12 rounded-full bg-vibrant-yellow flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-arrow-right text-vibrant-blue text-xl"></i>
                 </div>
-                <div class="flex-1 text-center">
-                    <p class="text-[10px] font-bold text-slate-300 mb-1 uppercase">假單訖</p>
-                    <p id="sysEnd" class="text-3xl font-black mono text-morandi-dark dark:text-morandi-sand">17:30</p>
+                <div class="flex-1 text-right">
+                    <p class="text-[10px] font-bold opacity-60 mb-2 uppercase tracking-widest">結束 (迄)</p>
+                    <p id="sysEnd" class="text-4xl font-black outfit">17:30</p>
                 </div>
             </div>
         </section>
 
-        <!-- 簽退提醒 (莫蘭迪綠色調) -->
-        <section class="bg-morandi-green rounded-[2.5rem] p-8 text-center text-white shadow-xl shadow-morandi-green/20 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                <i class="fa-solid fa-clock text-9xl -ml-10 -mt-5"></i>
+        <!-- 打卡簽退建議 -->
+        <section class="bg-vibrant-cyan rounded-[3rem] p-10 text-center shadow-xl shadow-vibrant-cyan/20 active:scale-95 transition-transform duration-300">
+            <div class="inline-block bg-white/20 px-4 py-1 rounded-full mb-4">
+                <p class="text-[11px] font-black text-white uppercase tracking-[0.4em]">實際簽退要求</p>
             </div>
-            <p class="text-[10px] font-black uppercase tracking-[0.3em] mb-3 opacity-80">實際簽退要求時間</p>
-            <p id="actualCheckOut" class="text-6xl font-black mono tracking-tighter">16:30</p>
-            <p class="mt-4 text-xs font-bold bg-white/20 inline-block px-4 py-1 rounded-full">此時間之後簽退即可 🌿</p>
+            <p id="actualCheckOut" class="text-7xl font-black outfit text-white tracking-tighter drop-shadow-md">16:30</p>
+            <p class="mt-6 text-sm font-black text-vibrant-blue opacity-80 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check-double"></i> 看到這時間就能打卡了
+            </p>
         </section>
 
-        <footer class="text-center">
-            <p id="standardOff" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">正常下班基準：17:30</p>
+        <footer class="text-center pb-8">
+            <p id="standardOff" class="text-[10px] font-black text-slate-300 uppercase tracking-widest">基準：17:30 無請假</p>
         </footer>
 
     </main>
 
-    <!-- 莫蘭迪彈窗 -->
-    <div id="pickerModal" class="fixed inset-0 z-50 hidden bg-morandi-dark/40 backdrop-blur-sm items-end sm:items-center justify-center transition-all p-4">
-        <div class="bg-white dark:bg-slate-800 w-full sm:max-w-sm rounded-[3rem] p-8 shadow-2xl transition-all">
+    <!-- 複合式選擇彈窗 (輸入法優先) -->
+    <div id="pickerModal" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-xl items-end sm:items-center justify-center transition-all p-4">
+        <div class="bg-white dark:bg-slate-900 w-full sm:max-w-sm rounded-[3.5rem] p-8 shadow-2xl transition-all border-4 border-vibrant-yellow animate-pop">
+            
             <div class="flex justify-between items-center mb-8">
-                <h3 class="font-black text-morandi-dark dark:text-morandi-sand">設定時間</h3>
-                <div class="flex bg-slate-100 dark:bg-slate-700 rounded-2xl p-1">
-                    <button onclick="toggleMode('wheel')" id="btnWheel" class="px-5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-500 shadow-sm transition-all">滾輪</button>
-                    <button onclick="toggleMode('key')" id="btnKey" class="px-5 py-2 rounded-xl text-xs font-bold text-slate-400 transition-all">輸入</button>
+                <h3 class="font-black text-vibrant-blue dark:text-white uppercase tracking-widest text-sm">設定時間</h3>
+                <div class="flex bg-slate-100 dark:bg-slate-800 rounded-full p-1 border-2 border-slate-200 dark:border-slate-700">
+                    <button onclick="toggleMode('key')" id="btnKey" class="px-6 py-2 rounded-full text-xs font-black bg-vibrant-blue text-white shadow-md transition-all">輸入</button>
+                    <button onclick="toggleMode('wheel')" id="btnWheel" class="px-6 py-2 rounded-full text-xs font-black text-slate-400 transition-all">滾輪</button>
                 </div>
             </div>
 
-            <div id="modeWheel" class="flex justify-center items-center gap-6 h-56 overflow-hidden relative">
-                <div class="absolute h-14 w-full border-y border-morandi-sand pointer-events-none"></div>
+            <!-- 第一選項：直接輸入 (預設) -->
+            <div id="modeKey" class="flex flex-col items-center py-12">
+                <div class="relative">
+                    <input type="text" id="manualValue" maxlength="4" autofocus
+                        placeholder="0830"
+                        class="w-full text-center text-7xl font-black outfit bg-transparent border-b-8 border-vibrant-yellow outline-none pb-2 text-vibrant-blue dark:text-white placeholder:opacity-10">
+                </div>
+                <p class="mt-6 text-[11px] text-slate-400 font-black uppercase tracking-widest">輸入四位數 如 1630</p>
+            </div>
+
+            <!-- 第二選項：滾輪選擇 -->
+            <div id="modeWheel" class="hidden justify-center items-center gap-6 h-64 overflow-hidden relative">
+                <div class="absolute h-16 w-full border-y-4 border-vibrant-yellow/30 pointer-events-none"></div>
                 <div class="w-24 text-center overflow-y-scroll snap-y snap-mandatory no-scrollbar" id="wheelH"></div>
-                <div class="text-2xl font-bold text-morandi-sand">:</div>
+                <div class="text-4xl font-black text-vibrant-yellow">:</div>
                 <div class="w-24 text-center overflow-y-scroll snap-y snap-mandatory no-scrollbar" id="wheelM"></div>
             </div>
 
-            <div id="modeKey" class="hidden flex-col items-center py-12">
-                <input type="text" id="manualValue" maxlength="4" placeholder="0830"
-                    class="w-full text-center text-6xl font-black mono bg-transparent border-b-2 border-morandi-blue outline-none pb-2 text-morandi-dark dark:text-white">
-                <p class="mt-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">請輸入數字 如 1630</p>
-            </div>
-
             <div class="flex gap-4 mt-8">
-                <button onclick="closePicker()" class="flex-1 py-4 text-slate-400 font-bold">取消</button>
-                <button onclick="confirmPicker()" class="flex-1 py-4 bg-morandi-blue text-white rounded-2xl font-bold shadow-lg shadow-morandi-blue/30 active:scale-95 transition-all">確認</button>
+                <button onclick="closePicker()" class="flex-1 py-5 text-slate-400 font-black hover:bg-slate-50 dark:hover:bg-slate-800 rounded-3xl transition-all">取消</button>
+                <button onclick="confirmPicker()" class="flex-1 py-5 bg-vibrant-orange text-white rounded-3xl font-black shadow-xl shadow-vibrant-orange/40 active:scale-95 transition-all text-lg">確定</button>
             </div>
         </div>
     </div>
 
     <script>
         let state = { target: 'start', start: {h: 8, m: 30}, leave: {h: 16, m: 0} };
-        let currentMode = 'wheel';
+        let currentMode = 'key';
 
         function createWheels() {
             const hWheel = document.getElementById('wheelH');
@@ -150,7 +163,7 @@
                     const center = w.scrollTop + w.offsetHeight/2;
                     w.querySelectorAll('.wheel-item').forEach(item => {
                         const dist = Math.abs(item.offsetTop + item.offsetHeight/2 - center);
-                        item.classList.toggle('active', dist < 22);
+                        item.classList.toggle('active', dist < 25);
                     });
                 });
             });
@@ -159,12 +172,16 @@
         function openPicker(target) {
             state.target = target;
             document.getElementById('pickerModal').classList.replace('hidden', 'flex');
+            document.getElementById('manualValue').value = '';
+            
+            // 滾輪位置同步
             const h = state[target].h;
             const m = state[target].m;
             setTimeout(() => {
-                document.getElementById('wheelH').scrollTop = h * 45;
-                document.getElementById('wheelM').scrollTop = m * 45;
-            }, 60);
+                document.getElementById('wheelH').scrollTop = h * 50;
+                document.getElementById('wheelM').scrollTop = m * 50;
+                if(currentMode === 'key') document.getElementById('manualValue').focus();
+            }, 100);
         }
 
         function closePicker() { document.getElementById('pickerModal').classList.replace('flex', 'hidden'); }
@@ -173,22 +190,34 @@
             currentMode = mode;
             document.getElementById('modeWheel').classList.toggle('hidden', mode === 'key');
             document.getElementById('modeKey').classList.toggle('hidden', mode === 'wheel');
-            document.getElementById('btnWheel').className = mode === 'wheel' ? "px-5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-500 shadow-sm transition-all" : "px-5 py-2 rounded-xl text-xs font-bold text-slate-400 transition-all";
-            document.getElementById('btnKey').className = mode === 'key' ? "px-5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-500 shadow-sm transition-all" : "px-5 py-2 rounded-xl text-xs font-bold text-slate-400 transition-all";
+            
+            const btnKey = document.getElementById('btnKey');
+            const btnWheel = document.getElementById('btnWheel');
+            
+            if(mode === 'key') {
+                btnKey.className = "px-6 py-2 rounded-full text-xs font-black bg-vibrant-blue text-white shadow-md transition-all";
+                btnWheel.className = "px-6 py-2 rounded-full text-xs font-black text-slate-400 transition-all";
+                setTimeout(() => document.getElementById('manualValue').focus(), 50);
+            } else {
+                btnWheel.className = "px-6 py-2 rounded-full text-xs font-black bg-vibrant-blue text-white shadow-md transition-all";
+                btnKey.className = "px-6 py-2 rounded-full text-xs font-black text-slate-400 transition-all";
+            }
         }
 
         function confirmPicker() {
             let h, m;
             if (currentMode === 'wheel') {
-                h = Math.round(document.getElementById('wheelH').scrollTop / 45);
-                m = Math.round(document.getElementById('wheelM').scrollTop / 45);
+                h = Math.round(document.getElementById('wheelH').scrollTop / 50);
+                m = Math.round(document.getElementById('wheelM').scrollTop / 50);
             } else {
-                const val = document.getElementById('manualValue').value.padStart(4, '0');
+                let val = document.getElementById('manualValue').value.padStart(4, '0');
                 h = parseInt(val.slice(0, 2)); m = parseInt(val.slice(2, 4));
             }
             if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
                 state[state.target] = {h, m};
                 updateUI(); closePicker();
+            } else {
+                alert('時間格式錯誤');
             }
         }
 
@@ -207,7 +236,7 @@
             document.getElementById('actualCheckOut').textContent = mToT(stdOff - gap);
             document.getElementById('sysStart').textContent = mToT(1050 - gap);
             document.getElementById('leaveHours').textContent = (gap / 60).toFixed(1);
-            document.getElementById('standardOff').textContent = `正常下班基準：${mToT(stdOff)}`;
+            document.getElementById('standardOff').textContent = `基準：${mToT(stdOff)} 無請假`;
         }
 
         function mToT(m) { return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`; }
