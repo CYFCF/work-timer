@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>差假計算器</title>
     
-    <!-- 手機 App 圖示支援指令 (保留功能，不影響介面) -->
+    <!-- 手機 App 圖示支援指令 -->
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="mobile-web-app-capable" content="yes">
@@ -62,7 +62,6 @@
 
     <main class="max-w-md mx-auto min-h-screen p-6 space-y-10">
         <header class="flex justify-between items-center pt-4">
-            <!-- 已移除標題旁的 img 圖示 -->
             <div class="relative">
                 <div class="absolute -left-2 -top-1 w-6 h-6 bg-jp-yellow rounded-full -z-10"></div>
                 <h1 class="text-3xl font-black text-slate-800 dark:text-white tracking-tighter">差假計算器</h1>
@@ -109,6 +108,7 @@
             </div>
         </section>
 
+        <!-- v12.2 最速打卡可能時間 -->
         <section class="jp-pop-card bg-jp-blue rounded-[2rem] p-6 text-center border-4 border-slate-900 shadow-[10px_10px_0px_#1A1A1A]">
             <p class="text-[10px] font-black text-white/90 uppercase tracking-[0.4em] mb-3">最速打卡可能時間</p>
             <p id="actualCheckOut" class="text-5xl sm:text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)] leading-none">16:30</p>
@@ -141,7 +141,7 @@
             </div>
             <div id="modeKey" class="flex flex-col items-center py-4">
                 <input type="tel" id="manualValue" maxlength="4" placeholder="0830"
-                    class="w-full text-center text-7xl font-black bg-transparent border-b-8 border-jp-blue outline-none pb-2 text-slate-800 dark:text-white placeholder:opacity-20">
+                    class="w-full text-center text-6xl font-black bg-transparent border-b-8 border-jp-blue outline-none pb-2 text-slate-800 dark:text-white placeholder:opacity-20">
             </div>
             <div id="modeWheel" class="hidden flex justify-center items-center gap-4 py-4">
                 <div class="wheel-outer w-20">
@@ -164,6 +164,9 @@
     <script>
         let state = { target: 'start', start: {h: 8, m: 30}, leave: {h: 16, m: 0} };
         let currentMode = 'key';
+
+        const LUNCH_START = 12 * 60 + 30; // 12:30 (750 分鐘)
+        const LUNCH_END = 13 * 60 + 30;   // 13:30 (810 分鐘)
 
         function createWheels() {
             const hWheel = document.getElementById('wheelH');
@@ -244,14 +247,42 @@
         }
 
         function calculate() {
-            const s = Math.max(480, state.start.h * 60 + state.start.m);
-            const std = Math.min(1080, s + 540);
-            const l = state.leave.h * 60 + state.leave.m;
-            let g = Math.max(0, Math.ceil((std - l) / 30) * 30);
-            document.getElementById('actualCheckOut').textContent = mToT(std - g);
-            document.getElementById('sysStart').textContent = mToT(1050 - g);
-            document.getElementById('leaveHours').textContent = (g / 60).toFixed(1);
-            document.getElementById('standardOff').textContent = mToT(std);
+            // 1. 簽到時間 (低於 08:00 以 08:00 計)
+            let rawStart = state.start.h * 60 + state.start.m;
+            let start = Math.max(480, rawStart);
+
+            // 2. 基準下班時間 (8小時工時 + 1小時午休 = 9小時 = 540分鐘)
+            let stdOff = Math.min(1080, start + 540);
+            document.getElementById('standardOff').textContent = mToT(stdOff);
+
+            // 3. 預計離開時間
+            let leave = state.leave.h * 60 + state.leave.m;
+
+            // 4. 計算原始欠缺時間
+            let rawGap = Math.max(0, stdOff - leave);
+
+            // 5. 若離開時間在 12:30 前 (或包含午休)，扣除 12:30 ~ 13:30 的 60 分鐘休息時間
+            if (leave <= LUNCH_START && rawGap > 0) {
+                rawGap = Math.max(0, rawGap - 60);
+            }
+
+            // 6. 系統假單單位無條件進位 (以 30 分鐘為單位)
+            let roundedGap = Math.ceil(rawGap / 30) * 30;
+
+            // 7. 最速打卡可能時間 (v12.2 邏輯：基準下班時間 - 進位後的請假分鐘)
+            let actualCheckOutMin = stdOff - roundedGap;
+
+            // 8. 系統假單區間起點計算 (從 17:30 往前推算，跨越午休則順延 60 分鐘)
+            const SYS_LIMIT_END = 1050; // 17:30
+            let sysStartMin = SYS_LIMIT_END - roundedGap;
+            if (sysStartMin < LUNCH_END && sysStartMin >= LUNCH_START - roundedGap) {
+                sysStartMin -= 60;
+            }
+
+            document.getElementById('actualCheckOut').textContent = mToT(actualCheckOutMin);
+            document.getElementById('sysStart').textContent = mToT(sysStartMin);
+            document.getElementById('sysEnd').textContent = "17:30";
+            document.getElementById('leaveHours').textContent = (roundedGap / 60).toFixed(1);
         }
 
         function mToT(m) { return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`; }
