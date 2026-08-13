@@ -108,6 +108,7 @@
             </div>
         </section>
 
+        <!-- v12.2 最速打卡可能時間 -->
         <section class="jp-pop-card bg-jp-blue rounded-[2rem] p-6 text-center border-4 border-slate-900 shadow-[10px_10px_0px_#1A1A1A]">
             <p class="text-[10px] font-black text-white/90 uppercase tracking-[0.4em] mb-3">最速打卡可能時間</p>
             <p id="actualCheckOut" class="text-5xl sm:text-7xl font-black text-white tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)] leading-none">16:30</p>
@@ -123,7 +124,7 @@
             </div>
             <div class="text-right">
                 <p id="standardOff" class="text-2xl sm:text-3xl font-black text-slate-800 mono tracking-tighter">17:30</p>
-                <p class="text-[8px] font-bold text-slate-400 italic">※ 已扣除 12:30-13:30 午休</p>
+                <p class="text-[8px] font-bold text-slate-400 italic">※ 無請假狀態</p>
             </div>
         </section>
     </main>
@@ -245,7 +246,7 @@
             calculate();
         }
 
-        // 計算特定區間內重疊的午休分鐘數 (12:30 ~ 13:30)
+        // 計算區間內重疊的午休分鐘數 (12:30 ~ 13:30)
         function getLunchOverlap(startMin, endMin) {
             if (startMin >= endMin) return 0;
             const overlapStart = Math.max(startMin, LUNCH_START);
@@ -256,7 +257,7 @@
         function calculate() {
             // 1. 簽到時間 (低於 08:00 以 08:00 計)
             let rawStart = state.start.h * 60 + state.start.m;
-            let start = Math.max(480, rawStart); 
+            let start = Math.max(480, rawStart);
 
             // 2. 基準下班時間 (8小時工時 + 1小時午休 = 9小時 = 540分鐘)
             let stdOff = Math.min(1080, start + 540);
@@ -265,24 +266,25 @@
             // 3. 預計離開時間
             let leave = state.leave.h * 60 + state.leave.m;
 
-            // 4. 計算離場時欠缺的工時 (並排除欠缺區間內的午休時間)
+            // 4. 計算離場時欠缺的工時 (扣除午休 12:30-13:30)
             let rawGap = Math.max(0, stdOff - leave);
             let lunchOverlap = getLunchOverlap(leave, stdOff);
-            let workGap = Math.max(0, rawGap - lunchOverlap); // 扣除午休後真正欠缺的工時分鐘
+            let workGap = Math.max(0, rawGap - lunchOverlap);
 
-            // 5. 系統假單必須以 30 分鐘為單位無條件進位
+            // 5. 系統假單單位無條件進位 (30 分鐘)
             let roundedGap = Math.ceil(workGap / 30) * 30;
 
-            // 6. 計算系統假單起點 (假單上限為 17:30，往前推算請假時數)
-            const SYS_LIMIT_END = 1050; // 17:30 (1050 分鐘)
-            let sysStartMin = SYS_LIMIT_END - roundedGap;
+            // 6. 最速打卡可能時間 (v12.2 邏輯：基準下班時間 - 進位後的請假分鐘)
+            let actualCheckOutMin = stdOff - roundedGap;
 
-            // 若推算出來的假單開始時間跨越午休 (12:30-13:30)，假單開始點需再往前提 60 分鐘
+            // 7. 系統假單區間起點計算 (從 17:30 往前推算，若跨越午休則順延 60 分鐘)
+            const SYS_LIMIT_END = 1050; // 17:30
+            let sysStartMin = SYS_LIMIT_END - roundedGap;
             if (sysStartMin < LUNCH_END && sysStartMin >= LUNCH_START - roundedGap) {
                 sysStartMin -= 60;
             }
 
-            document.getElementById('actualCheckOut').textContent = mToT(stdOff - roundedGap);
+            document.getElementById('actualCheckOut').textContent = mToT(actualCheckOutMin);
             document.getElementById('sysStart').textContent = mToT(sysStartMin);
             document.getElementById('sysEnd').textContent = "17:30";
             document.getElementById('leaveHours').textContent = (roundedGap / 60).toFixed(1);
